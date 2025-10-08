@@ -9,7 +9,10 @@ app = Flask(__name__)
 
 # Configuration
 app.config['SECRET_KEY'] = 'your-secret-key-here'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///landing_pages.db'
+
+# Database configuration - can be overridden by environment variable
+database_url = os.getenv('DATABASE_URL', 'sqlite:///landing_pages.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize database
