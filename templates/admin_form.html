@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Bag Opinion - bababebi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        .admin-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .admin-container h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .form-group input[type="file"] {
+            padding: 5px;
+        }
+        
+        .submit-btn {
+            background-color: #333;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .submit-btn:hover {
+            background-color: #555;
+        }
+        
+        .admin-links {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .admin-links a {
+            color: #333;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        
+        .admin-links a:hover {
+            text-decoration: underline;
+        }
+        
+        .required {
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <h1>Add New Bag Opinion</h1>
+        <form method="POST" action="/submit" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="reference_number">Reference Number <span class="required">*</span>:</label>
+                <input type="text" id="reference_number" name="reference_number" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="recipient">Recipient <span class="required">*</span>:</label>
+                <input type="text" id="recipient" name="recipient" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="model">Model <span class="required">*</span>:</label>
+                <input type="text" id="model" name="model" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="year">Year of Manufacture <span class="required">*</span>:</label>
+                <input type="text" id="year" name="year" required placeholder="e.g., 2019 D">
+            </div>
+            
+            <div class="form-group">
+                <label for="additional_stamps">Additional Stamps:</label>
+                <input type="text" id="additional_stamps" name="additional_stamps" placeholder="e.g., IS 301 HB">
+            </div>
+            
+            <div class="form-group">
+                <label for="opinion_text">Opinion Text:</label>
+                <textarea id="opinion_text" name="opinion_text" placeholder="Enter the opinion text"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="front_image">Front Image <span class="required">*</span>:</label>
+                <input type="file" id="front_image" name="front_image" accept="image/*" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="stamp_image">Stamp Image <span class="required">*</span>:</label>
+                <input type="file" id="stamp_image" name="stamp_image" accept="image/*" required>
+            </div>
+            
+            <button type="submit" class="submit-btn">Create Opinion</button>
+        </form>
+        
+        <div class="admin-links">
+            <a href="/admin">View All Bags</a>
+            <a href="/">Add Another Bag</a>
+        </div>
+    </div>
+</body>
+</html>

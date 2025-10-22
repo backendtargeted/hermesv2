@@ -32,25 +32,19 @@
 </style>
     
     <!-- JavaScript -->
-    <script src="js/jquery.min.js"></script>
-    <script src="js/jquery-extend-3.4.0.js.download"></script>
-    <script src="js/jquery-html-prefilter-3.5.0-backport.js.download"></script>
-    <script src="js/jquery.once.js.download"></script>
-    <script src="js/drupal.js"></script>
-    <script src="js/jquery_browser.js.download"></script>
-    <script src="js/responsive-dropdown-menus.js"></script>
-    <script src="js/custom.js"></script>
-    <script>jQuery.extend(Drupal.settings, {"basePath":"\/","pathPrefix":"","setHasJsCookie":0,"ajaxPageState":{"theme":"bababebi","theme_token":"GP1UVNKdEtAPEGFHjTAQvKnCrysAMT7A5amcmCuqoVE","js":{"\/\/ajax.googleapis.com\/ajax\/libs\/jquery\/1.12.4\/jquery.min.js":1,"0":1,"misc\/jquery-extend-3.4.0.js":1,"misc\/jquery-html-prefilter-3.5.0-backport.js":1,"misc\/jquery.once.js":1,"misc\/drupal.js":1,"sites\/all\/modules\/contrib\/jquery_update\/js\/jquery_browser.js":1,"sites\/all\/modules\/contrib\/responsive_dropdown_menus\/theme\/responsive-dropdown-menus.js":1},"css":{"modules\/system\/system.base.css":1,"modules\/system\/system.menus.css":1,"modules\/system\/system.messages.css":1,"modules\/system\/system.theme.css":1,"modules\/comment\/comment.css":1,"modules\/field\/theme\/field.css":1,"modules\/node\/node.css":1,"modules\/search\/search.css":1,"modules\/user\/user.css":1,"sites\/all\/modules\/contrib\/views\/css\/views.css":1,"sites\/all\/modules\/contrib\/ckeditor\/css\/ckeditor.css":1,"sites\/all\/modules\/contrib\/ctools\/css\/ctools.css":1,"sites\/all\/modules\/contrib\/responsive_dropdown_menus\/theme\/responsive-dropdown-menus.css":1,"sites\/all\/themes\/bababebi\/system.menus.css":1,"sites\/all\/themes\/bababebi\/system.messages.css":1,"sites\/all\/themes\/bababebi\/system.theme.css":1,"sites\/all\/themes\/bababebi\/css\/styles.css":1}},"responsive_dropdown_menus":{"main-menu":"Main menu","management":"Management","navigation":"Navigation","menu-opinion":"Opinion","user-menu":"User menu"}});</script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+    <script>jQuery.extend(Drupal.settings, {"basePath":"\/","pathPrefix":"","setHasJsCookie":0,"ajaxPageState":{"theme":"bababebi","theme_token":"GP1UVNKdEtAPEGFHjTAQvKnCrysAMT7A5amcmCuqoVE","js":{"\/\/ajax.googleapis.com\/ajax\/libs\/jquery\/1.12.4\/jquery.min.js":1,"0":1,"misc\/jquery-extend-3.4.0.js":1,"misc\/jquery-html-prefilter-3.5.0-backport.js":1,"misc\/jquery.once.js":1,"misc\/drupal.js":1,"sites\/all\/modules\/contrib\/jquery_update\/js\/jquery_browser.js":1,"sites\/all\/modules\/contrib\/responsive_dropdown_menus\/theme\/responsive-dropdown-menus.js":1},"css":{"modules\/system\/system.base.css":1,"modules\/system\/system.menus.css":1,"modules\/system\/system.theme.css":1,"modules\/comment\/comment.css":1,"modules\/field\/theme\/field.css":1,"modules\/node\/node.css":1,"modules\/search\/search.css":1,"modules\/user\/user.css":1,"sites\/all\/modules\/contrib\/views\/css\/views.css":1,"sites\/all\/modules\/contrib\/ckeditor\/css\/ckeditor.css":1,"sites\/all\/modules\/contrib\/ctools\/css\/ctools.css":1,"sites\/all\/modules\/contrib\/responsive_dropdown_menus\/theme\/responsive-dropdown-menus.css":1,"sites\/all\/themes\/bababebi\/system.menus.css":1,"sites\/all\/themes\/bababebi\/system.messages.css":1,"sites\/all\/themes\/bababebi\/system.theme.css":1,"sites\/all\/themes\/bababebi\/css\/styles.css":1}},"responsive_dropdown_menus":{"main-menu":"Main menu","management":"Management","navigation":"Navigation","menu-opinion":"Opinion","user-menu":"User menu"}});</script>
       <!--[if lt IE 9]>
     <script src="/sites/all/themes/zen/js/html5-respond.js"></script>
     <![endif]-->
 </head>
 
-<body class="html not-front not-logged-in no-sidebars page-opinion-long-code page-opinion-long-code-533ff008b027c6498c8fe7265cfd281 section-opinion-long-code page-views">
+<body class="html not-front not-logged-in no-sidebars page-opinion-long-code page-opinion-long-code-{{ bag[1] }} section-opinion-long-code page-views">
     <div id="page">
         <header class="header" id="header" role="banner">
             <a href="https://bababebi.com/" title="Home" rel="home" class="header__logo" id="logo">
-                <img src="images/logo_con_letras_0.png" alt="Home" class="header__logo-image">
+                <img src="{{ url_for('static', filename='images/logo_con_letras_0.png') }}" alt="Home" class="header__logo-image">
             </a>
         </header>
 
@@ -70,60 +64,60 @@
                         <div class="views-row views-row-1 views-row-odd views-row-first views-row-last">
                             <div class="views-field views-field-field-date left">
                                 <div class="field-content">
-                                    <span property="dc:date" datatype="xsd:dateTime" content="2024-02-21T00:00:00-03:00" class="date-display-single">Wednesday, February 21, 2024</span>
+                                    <span property="dc:date" datatype="xsd:dateTime" content="{{ date_iso or bag[10] }}" class="date-display-single">{{ display_date or bag[10] }}</span>
                                 </div>
                             </div>
                             
                             <div class="views-field views-field-title right">
                                 <span class="views-label views-label-title">#</span>
-                                <span class="field-content">37904<br><br></span>
+                                <span class="field-content">{{ bag[2] }}<br><br></span>
                             </div>
                             
                             <div class="views-field views-field-field-to">
                                 <span class="views-label views-label-field-to">To: </span>
-                                <div class="field-content"> A*Listcolleczioni<br><br></div>
+                                <div class="field-content"> {{ bag[3] }}<br><br></div>
                             </div>
                             
-                            <!-- <div class="views-field views-field-field-opinion">
+                            <div class="views-field views-field-field-opinion">
                                 <div class="field-content view-opinion-long-code">
-                                    I have reviewed the pictures of the handbag that you sent to me. Based on those pictures, which included those presented below (front and stamp) in my opinion the item depicted therein is an authentic Hermès item.
+                                    {{ bag[6] }}
                                 </div>
                             </div>
-                             -->
+                            
                             <div class="views-field views-field-nothing">
                                 <span class="field-content centered">
-                                    <img src="images/phpqrcode" alt="QR Code">
+                                    <img src="{{ url_for('static', filename='images/qr/' + bag[1] + '_qr.png') }}" width="150" height="150" alt="QR Code">
                                     <br>
                                 </span>
                             </div>
                             
                             <div class="views-field views-field-field-model centered">
                                 <span class="views-label views-label-field-model">Model: </span>
-                                <div class="field-content">Kelly Mini II</div>
+                                <div class="field-content">{{ bag[4] }}</div>
                             </div>
                             
                             <div class="views-field views-field-field-date-texto centered">
                                 <span class="views-label views-label-field-date-texto">Year of manufacture: </span>
-                                <div class="field-content">2019 D</div>
+                                <div class="field-content">{{ bag[5] }}</div>
                             </div>
                             
                             <div class="views-field views-field-field-additional-stamps centered">
                                 <span class="views-label views-label-field-additional-stamps">Additional stamps: </span>
-                                <div class="field-content">IS 301 HB</div>
+                                <div class="field-content">{{ bag[7] }}</div>
                             </div>
                             
                             <div class="views-field views-field-field-front-photo">
                                 <div class="field-content centered">
-                                    <a href="images/37904f.png">
-                                        <img typeof="foaf:Image" src="images/37904f.png" width="164" height="220" alt="">
+                                    <a href="{{ url_for('static', filename=bag[8]) }}">
+                                        <img typeof="foaf:Image" src="{{ url_for('static', filename=(bag[8] | replace('_front.', '_front_web.'))) }}" width="164" height="220" alt="">
                                     </a>
                                 </div>
                             </div>
                             
                             <div class="views-field views-field-field-stamp-photo">
                                 <div class="field-content centered">
-                                    <a href="images/37904b.png">
-                                        <img typeof="foaf:Image" src="images/37904b.png" width="220" height="170" alt="">
+                                    <a href="{{ url_for('static', filename=bag[9]) }}">
+                                        <img typeof="foaf:Image" src="{{ url_for('static', filename=(bag[9] | replace('_stamp.', '_stamp_web.'))) }}" width="220" height="170" alt="">
                                     </a>
                                 </div>
                             </div>
@@ -132,7 +126,7 @@
                     
                     <div class="view-footer">
                         <p id="authenticity-title">
-                            <img height="50%" alt="" src="images/logo_con_letras_footer_opinions.png">
+                            <img height="50%" alt="" src="{{ url_for('static', filename='images/logo_con_letras_footer_opinions.png') }}">
                         </p>
                         
                         <p>
@@ -142,12 +136,12 @@
                         <div>
                             <div>
                                 <a href="https://www.facebook.com/bababebiofficialpage/">
-                                    <img src="images/fb-art.png" alt="Facebook">
+                                    <img src="{{ url_for('static', filename='images/fb-art.png') }}" alt="Facebook">
                                 </a>
                             </div>
                             <div>
                                 <a href="https://www.instagram.com/bababebi23/">
-                                    <img src="images/instagram-art.png" alt="Instagram">
+                                    <img src="{{ url_for('static', filename='images/instagram-art.png') }}" alt="Instagram">
                                 </a>
                             </div>
                         </div>
