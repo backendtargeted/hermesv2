@@ -35,14 +35,23 @@ RUN useradd --create-home --shell /bin/bash app
 # Create entrypoint script to fix permissions
 RUN echo '#!/bin/bash\n\
 # Fix permissions for mounted volumes\n\
+# Ensure data directory exists and has correct permissions\n\
+mkdir -p /app/data\n\
+chown -R app:app /app/data\n\
+chmod -R 755 /app/data\n\
+\n\
+# Fix permissions for existing database file if it exists\n\
 if [ -f /app/data/bags.db ]; then\n\
     chown app:app /app/data/bags.db\n\
     chmod 664 /app/data/bags.db\n\
 fi\n\
+\n\
+# Fix permissions for static images directory\n\
 if [ -d /app/static/images ]; then\n\
     chown -R app:app /app/static/images\n\
     chmod -R 755 /app/static/images\n\
 fi\n\
+\n\
 # Switch to app user and run the command\n\
 exec gosu app "$@"' > /entrypoint.sh && \
     chmod +x /entrypoint.sh

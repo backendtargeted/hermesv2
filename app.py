@@ -22,37 +22,42 @@ os.makedirs(QR_FOLDER, exist_ok=True)
 
 # Database setup
 def init_db():
-    # Ensure data directory exists
-    os.makedirs('data', exist_ok=True)
-    
-    conn = sqlite3.connect('data/bags.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS bags (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            uuid TEXT UNIQUE NOT NULL,
-            reference_number TEXT NOT NULL,
-            recipient TEXT NOT NULL,
-            model TEXT NOT NULL,
-            year TEXT NOT NULL,
-            additional_stamps TEXT,
-            opinion_text TEXT,
-            front_image_path TEXT,
-            stamp_image_path TEXT,
-            authentication_date TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    
-    # Add authentication_date column to existing tables if it doesn't exist
     try:
-        cursor.execute('ALTER TABLE bags ADD COLUMN authentication_date TEXT')
-    except sqlite3.OperationalError:
-        # Column already exists, ignore the error
-        pass
-    
-    conn.commit()
-    conn.close()
+        # Ensure data directory exists
+        os.makedirs('data', exist_ok=True)
+        
+        conn = sqlite3.connect('data/bags.db')
+        cursor = conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS bags (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                uuid TEXT UNIQUE NOT NULL,
+                reference_number TEXT NOT NULL,
+                recipient TEXT NOT NULL,
+                model TEXT NOT NULL,
+                year TEXT NOT NULL,
+                additional_stamps TEXT,
+                opinion_text TEXT,
+                front_image_path TEXT,
+                stamp_image_path TEXT,
+                authentication_date TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # Add authentication_date column to existing tables if it doesn't exist
+        try:
+            cursor.execute('ALTER TABLE bags ADD COLUMN authentication_date TEXT')
+        except sqlite3.OperationalError:
+            # Column already exists, ignore the error
+            pass
+        
+        conn.commit()
+        conn.close()
+        print("Database initialized successfully")
+    except Exception as e:
+        print(f"Database initialization error: {str(e)}")
+        raise
 
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -122,14 +127,17 @@ def submit_bag():
             qr_img.save(qr_path)
             
             # Save to database
-            conn = sqlite3.connect('data/bags.db')
-            cursor = conn.cursor()
-            cursor.execute('''
-                INSERT INTO bags (uuid, reference_number, recipient, model, year, additional_stamps, opinion_text, front_image_path, stamp_image_path, authentication_date)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (bag_uuid, reference_number, recipient, model, year, additional_stamps, opinion_text, front_relative_path, stamp_relative_path, authentication_date))
-            conn.commit()
-            conn.close()
+            try:
+                conn = sqlite3.connect('data/bags.db')
+                cursor = conn.cursor()
+                cursor.execute('''
+                    INSERT INTO bags (uuid, reference_number, recipient, model, year, additional_stamps, opinion_text, front_image_path, stamp_image_path, authentication_date)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (bag_uuid, reference_number, recipient, model, year, additional_stamps, opinion_text, front_relative_path, stamp_relative_path, authentication_date))
+                conn.commit()
+                conn.close()
+            except sqlite3.OperationalError as db_error:
+                return f"Database error: {str(db_error)}. Please check database permissions.", 500
             
             return redirect(url_for('view_opinion', uuid=bag_uuid))
         else:
