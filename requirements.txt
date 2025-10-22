@@ -1,7 +1,4 @@
 Flask==2.3.3
-Flask-SQLAlchemy==3.0.5
+qrcode[pil]==7.4.2
+Pillow==10.0.0
 Werkzeug==2.3.7
-# Database drivers (install as needed)
-# psycopg2-binary==2.9.7  # For PostgreSQL
-# PyMySQL==1.1.0          # For MySQL
-# pymssql==2.2.8          # For SQL Server
