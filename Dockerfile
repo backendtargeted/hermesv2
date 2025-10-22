@@ -29,8 +29,14 @@ ENV PYTHONUNBUFFERED=1
 # Expose port
 EXPOSE 5000
 
-# Create a non-root user for security
-RUN useradd --create-home --shell /bin/bash app && chown -R app:app /app
+# Create a non-root user with specific UID/GID
+RUN groupadd -g 1000 app && \
+    useradd --create-home --shell /bin/bash --uid 1000 --gid 1000 app
+
+# Change ownership of the app directory
+RUN chown -R app:app /app
+
+# Switch to non-root user
 USER app
 
 # Run the application
