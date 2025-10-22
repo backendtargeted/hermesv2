@@ -24,7 +24,6 @@ RUN mkdir -p static/images/bags static/images/qr
 # Set environment variables
 ENV FLASK_APP=app.py
 ENV FLASK_ENV=production
-ENV PYTHONUNBUFFERED=1
 
 # Expose port
 EXPOSE 5000
