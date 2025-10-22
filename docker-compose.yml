@@ -7,7 +7,7 @@ services:
       - "5000:5000"
     volumes:
       - ./static/images:/app/static/images
-      - ./bags.db:/app/bags.db
+      - ./data:/app/data
     environment:
       - FLASK_ENV=production
       - FLASK_APP=app.py

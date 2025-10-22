@@ -19,11 +19,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Create necessary directories
-RUN mkdir -p static/images/bags static/images/qr
+RUN mkdir -p static/images/bags static/images/qr data
 
 # Set environment variables
 ENV FLASK_APP=app.py
 ENV FLASK_ENV=production
+ENV PYTHONUNBUFFERED=1
 
 # Expose port
 EXPOSE 5000
@@ -33,13 +34,21 @@ RUN useradd --create-home --shell /bin/bash app
 
 # Create entrypoint script to fix permissions
 RUN echo '#!/bin/bash\n\
-chown -R app:app /app/static/images 2>/dev/null || true\n\
-chown app:app /app/bags.db 2>/dev/null || true\n\
-exec "$@"' > /entrypoint.sh && \
+# Fix permissions for mounted volumes\n\
+if [ -f /app/data/bags.db ]; then\n\
+    chown app:app /app/data/bags.db\n\
+    chmod 664 /app/data/bags.db\n\
+fi\n\
+if [ -d /app/static/images ]; then\n\
+    chown -R app:app /app/static/images\n\
+    chmod -R 755 /app/static/images\n\
+fi\n\
+# Switch to app user and run the command\n\
+exec gosu app "$@"' > /entrypoint.sh && \
     chmod +x /entrypoint.sh
 
-# Switch to non-root user
-USER app
+# Install gosu for user switching
+RUN apt-get update && apt-get install -y gosu && rm -rf /var/lib/apt/lists/*
 
 # Use entrypoint to fix permissions before running app
 ENTRYPOINT ["/entrypoint.sh"]

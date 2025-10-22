@@ -19,7 +19,10 @@ os.makedirs(QR_FOLDER, exist_ok=True)
 
 # Database setup
 def init_db():
-    conn = sqlite3.connect('bags.db')
+    # Ensure data directory exists
+    os.makedirs('data', exist_ok=True)
+    
+    conn = sqlite3.connect('data/bags.db')
     cursor = conn.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS bags (
@@ -114,7 +117,7 @@ def submit_bag():
             qr_img.save(qr_path)
             
             # Save to database
-            conn = sqlite3.connect('bags.db')
+            conn = sqlite3.connect('data/bags.db')
             cursor = conn.cursor()
             cursor.execute('''
                 INSERT INTO bags (uuid, reference_number, recipient, model, year, additional_stamps, opinion_text, front_image_path, stamp_image_path, authentication_date)
@@ -132,7 +135,7 @@ def submit_bag():
 
 @app.route('/opinion-long-code/<uuid>')
 def view_opinion(uuid):
-    conn = sqlite3.connect('bags.db')
+    conn = sqlite3.connect('data/bags.db')
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM bags WHERE uuid = ?', (uuid,))
     bag = cursor.fetchone()
@@ -170,7 +173,7 @@ def view_opinion(uuid):
 
 @app.route('/admin')
 def admin_list():
-    conn = sqlite3.connect('bags.db')
+    conn = sqlite3.connect('data/bags.db')
     cursor = conn.cursor()
     cursor.execute('SELECT uuid, reference_number, recipient, model, created_at FROM bags ORDER BY created_at DESC')
     bags = cursor.fetchall()
