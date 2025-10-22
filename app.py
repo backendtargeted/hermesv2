@@ -7,8 +7,16 @@ import sqlite3
 from werkzeug.utils import secure_filename
 from PIL import Image
 from qrcode.image.pil import PilImage
-from weasyprint import HTML, CSS
 import requests
+
+# Try to import WeasyPrint, fallback if not available
+try:
+    from weasyprint import HTML, CSS
+    WEASYPRINT_AVAILABLE = True
+except ImportError as e:
+    print(f"WeasyPrint not available: {e}")
+    print("PDF generation will be disabled. Install WeasyPrint dependencies to enable PDF generation.")
+    WEASYPRINT_AVAILABLE = False
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
@@ -76,6 +84,9 @@ def make_web_copy(src_path, dest_path, max_dim=1200):
 
 def generate_pdf_from_bag(bag_uuid, base_url):
     """Generate PDF from bag opinion page"""
+    if not WEASYPRINT_AVAILABLE:
+        return None, "WeasyPrint is not available. PDF generation is disabled."
+    
     try:
         # Construct the opinion page URL
         opinion_url = f"{base_url}opinion-long-code/{bag_uuid}"
@@ -164,6 +175,89 @@ def generate_pdf_from_bag(bag_uuid, base_url):
     except Exception as e:
         return None, f"Error generating PDF: {str(e)}"
 
+def generate_printable_html(bag_uuid, base_url):
+    """Generate a printable HTML file as fallback when WeasyPrint is not available"""
+    try:
+        # Construct the opinion page URL
+        opinion_url = f"{base_url}opinion-long-code/{bag_uuid}"
+        
+        # Fetch the HTML content
+        response = requests.get(opinion_url, timeout=30)
+        response.raise_for_status()
+        
+        html_content = response.text
+        
+        # Add print-specific CSS
+        print_css = """
+        <style>
+        @media print {
+            @page {
+                size: A4;
+                margin: 1cm;
+            }
+            
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.4;
+                color: #333;
+                background: white;
+            }
+            
+            .container {
+                max-width: 100%;
+            }
+            
+            img {
+                max-width: 100%;
+                height: auto;
+                page-break-inside: avoid;
+            }
+            
+            /* Hide interactive elements */
+            button, input, select, textarea, .btn {
+                display: none !important;
+            }
+            
+            /* Optimize layout for printing */
+            .row {
+                page-break-inside: avoid;
+            }
+            
+            .col-md-6 {
+                width: 48%;
+                float: left;
+                margin-right: 2%;
+            }
+            
+            .col-md-6:nth-child(even) {
+                margin-right: 0;
+            }
+            
+            .row::after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+        }
+        </style>
+        """
+        
+        # Insert CSS into HTML
+        html_with_css = html_content.replace('<head>', f'<head>{print_css}')
+        
+        # Generate HTML filename
+        html_filename = f"{bag_uuid}_printable.html"
+        html_path = os.path.join(PDF_FOLDER, html_filename)
+        
+        # Save HTML file
+        with open(html_path, 'w', encoding='utf-8') as f:
+            f.write(html_with_css)
+        
+        return html_path, None
+        
+    except Exception as e:
+        return None, f"Error generating printable HTML: {str(e)}"
+
 @app.route('/')
 def index():
     return render_template('admin_form.html')
@@ -235,15 +329,32 @@ def submit_bag():
             
             # Generate PDF automatically after successful database save
             try:
-                base_url = BASE_URL if BASE_URL else request.url_root
-                pdf_path, pdf_error = generate_pdf_from_bag(bag_uuid, base_url)
-                if pdf_error:
-                    print(f"PDF generation warning: {pdf_error}")
+                # Use internal container URL for PDF generation to avoid external access issues
+                internal_url = "http://localhost:5000/"
+                
+                if WEASYPRINT_AVAILABLE:
+                    pdf_path, pdf_error = generate_pdf_from_bag(bag_uuid, internal_url)
+                    if pdf_error:
+                        print(f"PDF generation warning: {pdf_error}")
+                        # Try fallback HTML generation
+                        html_path, html_error = generate_printable_html(bag_uuid, internal_url)
+                        if html_error:
+                            print(f"HTML generation error: {html_error}")
+                        else:
+                            print(f"Printable HTML generated: {html_path}")
+                    else:
+                        print(f"PDF generated successfully: {pdf_path}")
                 else:
-                    print(f"PDF generated successfully: {pdf_path}")
+                    # Use HTML fallback when WeasyPrint is not available
+                    html_path, html_error = generate_printable_html(bag_uuid, internal_url)
+                    if html_error:
+                        print(f"HTML generation error: {html_error}")
+                    else:
+                        print(f"Printable HTML generated: {html_path}")
+                        
             except Exception as pdf_exception:
-                print(f"PDF generation error: {str(pdf_exception)}")
-                # Don't fail the entire process if PDF generation fails
+                print(f"Document generation error: {str(pdf_exception)}")
+                # Don't fail the entire process if document generation fails
             
             return redirect(url_for('view_opinion', uuid=bag_uuid))
         else:
@@ -310,6 +421,10 @@ def qr_file(filename):
 
 @app.route('/static/pdfs/<filename>')
 def pdf_file(filename):
+    return send_from_directory(PDF_FOLDER, filename)
+
+@app.route('/static/printable/<filename>')
+def printable_file(filename):
     return send_from_directory(PDF_FOLDER, filename)
 
 if __name__ == '__main__':
