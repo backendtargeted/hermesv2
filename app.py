@@ -11,6 +11,9 @@ from qrcode.image.pil import PilImage
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
+# Base URL for QR codes - use environment variable in production
+BASE_URL = os.environ.get('BASE_URL', None)
+
 # Ensure upload directories exist
 UPLOAD_FOLDER = 'static/images/bags'
 QR_FOLDER = 'static/images/qr'
@@ -107,7 +110,9 @@ def submit_bag():
             make_web_copy(stamp_path, stamp_web_path)
             
             # Generate QR code (transparent background, no white border)
-            qr_url = f"{request.url_root}opinion-long-code/{bag_uuid}"
+            # Use BASE_URL if set (production), otherwise use request.url_root (development)
+            base_url = BASE_URL if BASE_URL else request.url_root
+            qr_url = f"{base_url}opinion-long-code/{bag_uuid}"
             qr = qrcode.QRCode(version=1, box_size=10, border=1)
             qr.add_data(qr_url)
             qr.make(fit=True)

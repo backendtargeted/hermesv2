@@ -11,5 +11,6 @@ services:
     environment:
       - FLASK_ENV=production
       - FLASK_APP=app.py
+      - BASE_URL=https://leon-data-hermes-app.el1i26.easypanel.host/
     restart: unless-stopped
     container_name: hermes-bag-authentication
