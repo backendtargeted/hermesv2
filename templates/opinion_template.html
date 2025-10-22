@@ -1,17 +1,38 @@
 <!DOCTYPE html>
+<!-- 
+    OPINION TEMPLATE - Hermès Bag Authentication Report
+    This template displays a detailed authentication opinion for a Hermès handbag
+    including photos, QR code, and expert analysis.
+    
+    BAG DATA STRUCTURE (bag array):
+    bag[0]  = Database ID (not used in template)
+    bag[1]  = Unique bag identifier (used for QR codes and CSS classes)
+    bag[2]  = Bag number/ID (displayed as #)
+    bag[3]  = Recipient name (To: field)
+    bag[4]  = Model name (Model: field)
+    bag[5]  = Year of manufacture (Year of manufacture: field)
+    bag[6]  = Expert opinion text (main authentication analysis)
+    bag[7]  = Additional stamps/markings
+    bag[8]  = Front photo filename (full resolution)
+    bag[9]  = Stamp photo filename (full resolution)
+    bag[10] = Date (used as fallback for date_iso/display_date)
+-->
 <html lang="en" dir="ltr" prefix="content: http://purl.org/rss/1.0/modules/content/ dc: http://purl.org/dc/terms/ foaf: http://xmlns.com/foaf/0.1/ og: http://ogp.me/ns# rdfs: http://www.w3.org/2000/01/rdf-schema# sioc: http://rdfs.org/sioc/ns# sioct: http://rdfs.org/sioc/types# skos: http://www.w3.org/2004/02/skos/core# xsd: http://www.w3.org/2001/XMLSchema#" class="js">
 <head>
+    <!-- Basic HTML meta tags -->
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="Generator" content="Drupal 7 (http://drupal.org)">
     <link rel="shortcut icon" href="https://bababebi.com/sites/default/files/favicon.ico" type="image/vnd.microsoft.icon">
     <title>Opinion | bababebi</title>
     
+    <!-- Mobile optimization meta tags -->
     <meta name="MobileOptimized" content="width">
     <meta name="HandheldFriendly" content="true">
     <meta name="viewport" content="width=device-width">
     <!--[if IEMobile]><meta http-equiv="cleartype" content="on"><![endif]-->
 
-  <style>
+    <!-- External CSS imports from Drupal theme system -->
+    <style>
 @import url("https://bababebi.com/modules/system/system.base.css?s9xlys");
 </style>
 <style>
@@ -31,108 +52,150 @@
 @import url("https://bababebi.com/sites/all/themes/bababebi/css/styles.css?s9xlys");
 </style>
     
-    <!-- JavaScript -->
+    <!-- JavaScript libraries and custom scripts -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+    <!-- Drupal JavaScript configuration and settings -->
     <script>jQuery.extend(Drupal.settings, {"basePath":"\/","pathPrefix":"","setHasJsCookie":0,"ajaxPageState":{"theme":"bababebi","theme_token":"GP1UVNKdEtAPEGFHjTAQvKnCrysAMT7A5amcmCuqoVE","js":{"\/\/ajax.googleapis.com\/ajax\/libs\/jquery\/1.12.4\/jquery.min.js":1,"0":1,"misc\/jquery-extend-3.4.0.js":1,"misc\/jquery-html-prefilter-3.5.0-backport.js":1,"misc\/jquery.once.js":1,"misc\/drupal.js":1,"sites\/all\/modules\/contrib\/jquery_update\/js\/jquery_browser.js":1,"sites\/all\/modules\/contrib\/responsive_dropdown_menus\/theme\/responsive-dropdown-menus.js":1},"css":{"modules\/system\/system.base.css":1,"modules\/system\/system.menus.css":1,"modules\/system\/system.theme.css":1,"modules\/comment\/comment.css":1,"modules\/field\/theme\/field.css":1,"modules\/node\/node.css":1,"modules\/search\/search.css":1,"modules\/user\/user.css":1,"sites\/all\/modules\/contrib\/views\/css\/views.css":1,"sites\/all\/modules\/contrib\/ckeditor\/css\/ckeditor.css":1,"sites\/all\/modules\/contrib\/ctools\/css\/ctools.css":1,"sites\/all\/modules\/contrib\/responsive_dropdown_menus\/theme\/responsive-dropdown-menus.css":1,"sites\/all\/themes\/bababebi\/system.menus.css":1,"sites\/all\/themes\/bababebi\/system.messages.css":1,"sites\/all\/themes\/bababebi\/system.theme.css":1,"sites\/all\/themes\/bababebi\/css\/styles.css":1}},"responsive_dropdown_menus":{"main-menu":"Main menu","management":"Management","navigation":"Navigation","menu-opinion":"Opinion","user-menu":"User menu"}});</script>
       <!--[if lt IE 9]>
     <script src="/sites/all/themes/zen/js/html5-respond.js"></script>
     <![endif]-->
 </head>
 
+<!-- 
+    BODY: Main page container with Drupal classes and dynamic bag ID
+    bag[1] contains the unique bag identifier used for CSS classes and QR codes
+-->
 <body class="html not-front not-logged-in no-sidebars page-opinion-long-code page-opinion-long-code-{{ bag[1] }} section-opinion-long-code page-views">
     <div id="page">
+        <!-- HEADER: Site logo and branding -->
         <header class="header" id="header" role="banner">
             <a href="https://bababebi.com/" title="Home" rel="home" class="header__logo" id="logo">
                 <img src="{{ url_for('static', filename='images/logo_con_letras_0.png') }}" alt="Home" class="header__logo-image">
             </a>
         </header>
 
+        <!-- MAIN CONTENT AREA -->
         <div id="main">
-
-    <div id="content" class="column" role="main">
-                  <a id="main-content"></a>
-                    <h1 class="page__title title" id="page-title">Opinion</h1>
+            <!-- CONTENT CONTAINER: Main content wrapper -->
+            <div id="content" class="column" role="main">
+                <a id="main-content"></a>
+                <!-- PAGE TITLE: Main heading for the opinion page -->
+                <h1 class="page__title title" id="page-title">Opinion</h1>
                                           
-
+                <!-- VIEW CONTAINER: Drupal Views wrapper for the opinion content -->
                 <div class="view view-opinion-long view-id-opinion_long view-display-id-page_1 view-dom-id-ddcb315d5530f39bd43f144d940e626f">
+                    <!-- VIEW HEADER: Website link -->
                     <div class="view-header">
                         <a href="https://www.bababebi.com/"><strong>www.bababebi.com </strong></a>
                     </div>
                     
+                    <!-- VIEW CONTENT: Main data display area -->
                     <div class="view-content">
+                        <!-- VIEWS ROW: Container for all bag data fields -->
                         <div class="views-row views-row-1 views-row-odd views-row-first views-row-last">
+                            
+                            <!-- DATE FIELD: Authentication date (left side, floated) -->
                             <div class="views-field views-field-field-date left">
                                 <div class="field-content">
                                     <span property="dc:date" datatype="xsd:dateTime" content="{{ date_iso or bag[10] }}" class="date-display-single">{{ display_date or bag[10] }}</span>
                                 </div>
                             </div>
                             
+                            <!-- BAG NUMBER FIELD: Unique bag identifier (right side, floated) -->
                             <div class="views-field views-field-title right">
                                 <span class="views-label views-label-title">#</span>
                                 <span class="field-content">{{ bag[2] }}<br><br></span>
                             </div>
                             
+                            <!-- RECIPIENT FIELD: Who the opinion is addressed to -->
                             <div class="views-field views-field-field-to">
                                 <span class="views-label views-label-field-to">To: </span>
                                 <div class="field-content"> {{ bag[3] }}<br><br></div>
                             </div>
+                            <!-- CLEARFIX: Forces content below floated elements -->
+                            <div style="clear: both;"></div>
                             
+
+                            
+                            <!-- MODEL FIELD: Hermès bag model name -->
+                            <!-- <div class="views-field views-field-field-model centered">
+                                <span class="views-label views-label-field-model">Model: </span>
+                                <div class="field-content">{{ bag[4] }}</div>
+                            </div> -->
+                            
+                            <!-- YEAR FIELD: Year of manufacture -->
+                            <!-- <div class="views-field views-field-field-date-texto centered">
+                                <span class="views-label views-label-field-date-texto">Year of manufacture: </span>
+                                <div class="field-content">{{ bag[5] }}</div>
+                            </div> -->
+                            
+                            <!-- Tag Opinion -->
                             <div class="views-field views-field-field-opinion">
                                 <div class="field-content view-opinion-long-code">
-                                    {{ bag[6] }}
+                                    {{ bag[7] }}
                                 </div>
                             </div>
                             
+                            <!-- QR CODE FIELD: Unique QR code for this bag authentication -->
                             <div class="views-field views-field-nothing">
                                 <span class="field-content centered">
-                                    <img src="{{ url_for('static', filename='images/qr/' + bag[1] + '_qr.png') }}" width="150" height="150" alt="QR Code">
+                                    <img src="{{ url_for('static', filename='images/qr/' + bag[1] + '_qr.png') }}" width="123" height="123" alt="QR Code">
                                     <br>
                                 </span>
                             </div>
-                            
+
+                            <!-- MODEL FIELD: Hermès bag model name -->
                             <div class="views-field views-field-field-model centered">
                                 <span class="views-label views-label-field-model">Model: </span>
                                 <div class="field-content">{{ bag[4] }}</div>
                             </div>
                             
+                            <!-- YEAR FIELD: Year of manufacture -->
                             <div class="views-field views-field-field-date-texto centered">
                                 <span class="views-label views-label-field-date-texto">Year of manufacture: </span>
                                 <div class="field-content">{{ bag[5] }}</div>
                             </div>
-                            
+
+                            <!-- ADDITIONAL STAMPS FIELD: Any extra stamps or markings -->
                             <div class="views-field views-field-field-additional-stamps centered">
                                 <span class="views-label views-label-field-additional-stamps">Additional stamps: </span>
-                                <div class="field-content">{{ bag[7] }}</div>
+                                <div class="field-content">{{ bag[6] }}</div>
                             </div>
-                            
+
+                            <!-- FRONT PHOTO FIELD: Main bag photo (clickable to full size) -->
                             <div class="views-field views-field-field-front-photo">
                                 <div class="field-content centered">
                                     <a href="{{ url_for('static', filename=bag[8]) }}">
-                                        <img typeof="foaf:Image" src="{{ url_for('static', filename=(bag[8] | replace('_front.', '_front_web.'))) }}" width="164" height="220" alt="">
+                                        <img typeof="foaf:Image" src="{{ url_for('static', filename=(bag[8] | replace('_front.', '_front_web.'))) }}" style="width:220px;height:220px;object-fit:contain;" alt="">
                                     </a>
                                 </div>
                             </div>
                             
+                            <!-- STAMP PHOTO FIELD: Hermès stamp/logo photo (clickable to full size) -->
                             <div class="views-field views-field-field-stamp-photo">
                                 <div class="field-content centered">
                                     <a href="{{ url_for('static', filename=bag[9]) }}">
-                                        <img typeof="foaf:Image" src="{{ url_for('static', filename=(bag[9] | replace('_stamp.', '_stamp_web.'))) }}" width="220" height="170" alt="">
+                                        <img typeof="foaf:Image" src="{{ url_for('static', filename=(bag[9] | replace('_stamp.', '_stamp_web.'))) }}" style="width:220px;height:220px;object-fit:contain;" alt="">
                                     </a>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
+                    <!-- VIEW FOOTER: Legal disclaimer and social media links -->
                     <div class="view-footer">
+                        <!-- AUTHENTICITY LOGO: Footer branding -->
                         <p id="authenticity-title">
                             <img height="50%" alt="" src="{{ url_for('static', filename='images/logo_con_letras_footer_opinions.png') }}">
                         </p>
                         
+                        <!-- LEGAL DISCLAIMER: Important legal text about authentication service -->
                         <p>
                             <strong>bababebi</strong> is an independent authentication service that renders opinions on the authenticity of Hermès handbags and is not affiliated with or sponsored by or certified by Hermès. The opinions rendered by <strong>bababebi</strong> are my personal opinions and are based on my knowledge of Hermès handbags from over 30 years collecting, buying, and studying them. I make every effort to ensure that my opinions are accurate. Clients agree to release each of <strong>bababebi</strong> and me from any liability whatsoever and to defend, indemnify and hold each of <strong>bababebi</strong> and me harmless from and against any loss, damage or claim, arising out of, based upon or resulting from any opinion rendered by either of us with respect to Hermès handbags.
                         </p>
                         
+                        <!-- SOCIAL MEDIA LINKS: Facebook and Instagram -->
                         <div>
                             <div>
                                 <a href="https://www.facebook.com/bababebiofficialpage/">
@@ -148,15 +211,11 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-    
-
-    
-  </div>
-
-  
-</div>
-<script type="text/javascript">
+    <!-- JAVASCRIPT: Drupal menu and navigation functionality -->
+    <script type="text/javascript">
 var submenu;
 jQuery(document).ready(function($){
     var imageSrcDir = "/sites/all/themes/bababebi/images/menu/";

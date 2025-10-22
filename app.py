@@ -99,7 +99,7 @@ def submit_bag():
             qr.add_data(qr_url)
             qr.make(fit=True)
             qr_img = qr.make_image(image_factory=PilImage, fill_color="black", back_color=(255, 255, 255, 0))
-            qr_img = qr_img.convert("RGBA").resize((150, 150), Image.Resampling.NEAREST)
+            qr_img = qr_img.convert("RGBA").resize((123, 123), Image.Resampling.NEAREST)
             qr_path = os.path.join(QR_FOLDER, f"{bag_uuid}_qr.png")
             qr_img.save(qr_path)
             
