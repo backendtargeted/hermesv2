@@ -5,7 +5,7 @@ A dynamic Flask application that generates landing pages for Hermès handbag aut
 ## Features
 
 - **Dynamic Opinion Pages**: Generate unique landing pages for each verified bag
-- **QR Code Generation**: Automatic QR code creation linking to `/opinion/{31-char-uuid}`
+- **QR Code Generation**: Automatic QR code creation linking to `/opinion-long-code/{31-char-uuid}`
 - **Image Upload**: Upload front and stamp photos for each bag
 - **Admin Interface**: Simple form-based interface to add new bags
 - **Database Storage**: SQLite database to store all bag information
@@ -63,7 +63,7 @@ hermes/
 4. **Access the application**:
    - Admin form: http://localhost:5000/
    - Admin list: http://localhost:5000/admin
-   - Opinion pages: http://localhost:5000/opinion/{uuid}
+   - Opinion pages: http://localhost:5000/opinion-long-code/{uuid}
 
 ## Usage
 
@@ -90,14 +90,14 @@ hermes/
 ### QR Code Functionality
 
 - Each bag gets a unique 31-character UUID
-- QR codes are automatically generated linking to `/opinion/{uuid}`
+- QR codes are automatically generated linking to `/opinion-long-code/{uuid}`
 - QR codes are saved as PNG files in `static/images/qr/`
 
 ## API Endpoints
 
 - `GET /` - Admin form to add new bags
 - `POST /submit` - Process form submission and create new bag
-- `GET /opinion/<uuid>` - Display opinion page for specific bag
+- `GET /opinion-long-code/<uuid>` - Display opinion page for specific bag
 - `GET /admin` - List all bags
 - `GET /static/images/bags/<filename>` - Serve uploaded bag images
 - `GET /static/images/qr/<filename>` - Serve generated QR codes

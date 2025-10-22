@@ -33,9 +33,18 @@ def init_db():
             opinion_text TEXT,
             front_image_path TEXT,
             stamp_image_path TEXT,
+            authentication_date TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
+    
+    # Add authentication_date column to existing tables if it doesn't exist
+    try:
+        cursor.execute('ALTER TABLE bags ADD COLUMN authentication_date TEXT')
+    except sqlite3.OperationalError:
+        # Column already exists, ignore the error
+        pass
+    
     conn.commit()
     conn.close()
 
@@ -64,6 +73,7 @@ def submit_bag():
         year = request.form['year']
         additional_stamps = request.form.get('additional_stamps', '')
         opinion_text = request.form.get('opinion_text', '')
+        authentication_date = request.form.get('authentication_date', '')
         
         # Generate UUID (31 characters)
         bag_uuid = str(uuid.uuid4()).replace('-', '')[:31]
@@ -94,7 +104,7 @@ def submit_bag():
             make_web_copy(stamp_path, stamp_web_path)
             
             # Generate QR code (transparent background, no white border)
-            qr_url = f"{request.url_root}opinion/{bag_uuid}"
+            qr_url = f"{request.url_root}opinion-long-code/{bag_uuid}"
             qr = qrcode.QRCode(version=1, box_size=10, border=1)
             qr.add_data(qr_url)
             qr.make(fit=True)
@@ -107,9 +117,9 @@ def submit_bag():
             conn = sqlite3.connect('bags.db')
             cursor = conn.cursor()
             cursor.execute('''
-                INSERT INTO bags (uuid, reference_number, recipient, model, year, additional_stamps, opinion_text, front_image_path, stamp_image_path)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (bag_uuid, reference_number, recipient, model, year, additional_stamps, opinion_text, front_relative_path, stamp_relative_path))
+                INSERT INTO bags (uuid, reference_number, recipient, model, year, additional_stamps, opinion_text, front_image_path, stamp_image_path, authentication_date)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (bag_uuid, reference_number, recipient, model, year, additional_stamps, opinion_text, front_relative_path, stamp_relative_path, authentication_date))
             conn.commit()
             conn.close()
             
@@ -120,7 +130,7 @@ def submit_bag():
     except Exception as e:
         return f"Error processing request: {str(e)}", 500
 
-@app.route('/opinion/<uuid>')
+@app.route('/opinion-long-code/<uuid>')
 def view_opinion(uuid):
     conn = sqlite3.connect('bags.db')
     cursor = conn.cursor()
@@ -131,21 +141,30 @@ def view_opinion(uuid):
     if not bag:
         return "Bag not found", 404
     
-    # Format date to match example: "Wednesday, February 21, 2024"
-    raw_created_at = bag[10] if len(bag) > 10 else None
+    # Format authentication date to match example: "Wednesday, February 21, 2024"
+    raw_auth_date = bag[11] if len(bag) > 11 and bag[11] else None
     display_date = None
     date_iso = None
-    if raw_created_at:
+    if raw_auth_date:
         try:
-            parsed_dt = datetime.strptime(raw_created_at, "%Y-%m-%d %H:%M:%S")
-        except ValueError:
-            try:
-                parsed_dt = datetime.fromisoformat(raw_created_at)
-            except Exception:
-                parsed_dt = None
-        if parsed_dt:
+            # Parse the date from the form (YYYY-MM-DD format)
+            parsed_dt = datetime.strptime(raw_auth_date, "%Y-%m-%d")
             display_date = f"{parsed_dt.strftime('%A')}, {parsed_dt.strftime('%B')} {parsed_dt.day}, {parsed_dt.year}"
             date_iso = parsed_dt.isoformat()
+        except ValueError:
+            # Fallback to created_at if authentication_date is invalid
+            raw_created_at = bag[10] if len(bag) > 10 else None
+            if raw_created_at:
+                try:
+                    parsed_dt = datetime.strptime(raw_created_at, "%Y-%m-%d %H:%M:%S")
+                except ValueError:
+                    try:
+                        parsed_dt = datetime.fromisoformat(raw_created_at)
+                    except Exception:
+                        parsed_dt = None
+                if parsed_dt:
+                    display_date = f"{parsed_dt.strftime('%A')}, {parsed_dt.strftime('%B')} {parsed_dt.day}, {parsed_dt.year}"
+                    date_iso = parsed_dt.isoformat()
     
     return render_template('opinion_template.html', bag=bag, display_date=display_date, date_iso=date_iso)
 
