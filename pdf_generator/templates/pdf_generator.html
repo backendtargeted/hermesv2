@@ -1,0 +1,365 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Generator - Opinion Pages</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+        
+        input[type="text"], input[type="url"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+        
+        input[type="text"]:focus, input[type="url"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .example-urls {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+        
+        .example-urls h3 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+        
+        .example-urls p {
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+        
+        .url-example {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+            font-family: monospace;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .url-example:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .recent-pdfs {
+            margin-top: 30px;
+        }
+        
+        .pdf-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .pdf-info {
+            flex: 1;
+        }
+        
+        .pdf-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .pdf-date {
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+        
+        .download-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: background-color 0.2s ease;
+        }
+        
+        .download-btn:hover {
+            background: #218838;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📄 PDF Generator</h1>
+            <p>Convert opinion pages to PDF documents</p>
+        </div>
+        
+        <div class="content">
+            <form id="pdfForm">
+                <div class="form-group">
+                    <label for="url">Opinion Page URL:</label>
+                    <input type="url" id="url" name="url" placeholder="https://leon-data-hermes-app.el1i26.easypanel.host/opinion-long-code/..." required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="filename">PDF Filename (optional):</label>
+                    <input type="text" id="filename" name="filename" placeholder="opinion_report.pdf">
+                </div>
+                
+                <button type="submit" class="btn" id="generateBtn">
+                    Generate PDF
+                </button>
+            </form>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Generating PDF...</p>
+            </div>
+            
+            <div class="alert alert-success" id="successAlert"></div>
+            <div class="alert alert-error" id="errorAlert"></div>
+            
+            <div class="example-urls">
+                <h3>Example URLs:</h3>
+                <p>Click on any example to use it:</p>
+                <div class="url-example" onclick="setUrl('https://leon-data-hermes-app.el1i26.easypanel.host/opinion-long-code/2482c10f37244c68925380a8cee4c08')">
+                    https://leon-data-hermes-app.el1i26.easypanel.host/opinion-long-code/2482c10f37244c68925380a8cee4c08
+                </div>
+                <div class="url-example" onclick="setUrl('https://leon-data-hermes-app.el1i26.easypanel.host/opinion-long-code/0459f0cb1af641648cea3f01093f8b2')">
+                    https://leon-data-hermes-app.el1i26.easypanel.host/opinion-long-code/0459f0cb1af641648cea3f01093f8b2
+                </div>
+            </div>
+            
+            <div class="recent-pdfs" id="recentPdfs">
+                <h3>Recent PDFs:</h3>
+                <div id="pdfList">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function setUrl(url) {
+            document.getElementById('url').value = url;
+        }
+        
+        function showAlert(type, message) {
+            const alert = document.getElementById(type + 'Alert');
+            alert.textContent = message;
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+        
+        function loadRecentPdfs() {
+            fetch('/list')
+                .then(response => response.json())
+                .then(data => {
+                    const pdfList = document.getElementById('pdfList');
+                    if (data.pdfs && data.pdfs.length > 0) {
+                        pdfList.innerHTML = data.pdfs.map(pdf => `
+                            <div class="pdf-item">
+                                <div class="pdf-info">
+                                    <div class="pdf-name">${pdf.filename}</div>
+                                    <div class="pdf-date">Created: ${pdf.created}</div>
+                                </div>
+                                <a href="${pdf.download_url}" class="download-btn">Download</a>
+                            </div>
+                        `).join('');
+                    } else {
+                        pdfList.innerHTML = '<p>No PDFs generated yet.</p>';
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('pdfList').innerHTML = '<p>Error loading PDF list.</p>';
+                });
+        }
+        
+        document.getElementById('pdfForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const url = document.getElementById('url').value;
+            const filename = document.getElementById('filename').value;
+            const generateBtn = document.getElementById('generateBtn');
+            const loading = document.getElementById('loading');
+            
+            // Show loading state
+            generateBtn.disabled = true;
+            loading.style.display = 'block';
+            
+            // Hide previous alerts
+            document.getElementById('successAlert').style.display = 'none';
+            document.getElementById('errorAlert').style.display = 'none';
+            
+            // Submit form
+            const formData = new FormData();
+            formData.append('url', url);
+            formData.append('filename', filename);
+            
+            fetch('/generate', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('success', data.message);
+                    // Create download link
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = data.download_url;
+                    downloadLink.download = data.filename;
+                    downloadLink.click();
+                    
+                    // Refresh PDF list
+                    loadRecentPdfs();
+                } else {
+                    showAlert('error', data.error);
+                }
+            })
+            .catch(error => {
+                showAlert('error', 'Network error: ' + error.message);
+            })
+            .finally(() => {
+                generateBtn.disabled = false;
+                loading.style.display = 'none';
+            });
+        });
+        
+        // Load recent PDFs on page load
+        loadRecentPdfs();
+    </script>
+</body>
+</html>

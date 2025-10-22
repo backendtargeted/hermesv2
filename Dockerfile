@@ -19,7 +19,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Create necessary directories
-RUN mkdir -p static/images/bags static/images/qr data
+RUN mkdir -p static/images/bags static/images/qr data generated_pdfs
 
 # Set environment variables
 ENV FLASK_APP=app.py
@@ -50,6 +50,12 @@ fi\n\
 if [ -d /app/static/images ]; then\n\
     chown -R app:app /app/static/images\n\
     chmod -R 755 /app/static/images\n\
+fi\n\
+\n\
+# Fix permissions for generated PDFs directory\n\
+if [ -d /app/generated_pdfs ]; then\n\
+    chown -R app:app /app/generated_pdfs\n\
+    chmod -R 755 /app/generated_pdfs\n\
 fi\n\
 \n\
 # Switch to app user and run the command\n\

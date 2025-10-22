@@ -7,6 +7,8 @@ import sqlite3
 from werkzeug.utils import secure_filename
 from PIL import Image
 from qrcode.image.pil import PilImage
+from weasyprint import HTML, CSS
+import requests
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
@@ -17,8 +19,10 @@ BASE_URL = os.environ.get('BASE_URL', None)
 # Ensure upload directories exist
 UPLOAD_FOLDER = 'static/images/bags'
 QR_FOLDER = 'static/images/qr'
+PDF_FOLDER = 'generated_pdfs'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(QR_FOLDER, exist_ok=True)
+os.makedirs(PDF_FOLDER, exist_ok=True)
 
 # Database setup
 def init_db():
@@ -69,6 +73,96 @@ def make_web_copy(src_path, dest_path, max_dim=1200):
         im = im.convert("RGB")
         im.thumbnail((max_dim, max_dim), Image.Resampling.LANCZOS)
         im.save(dest_path, format="JPEG", quality=85, optimize=True, progressive=True)
+
+def generate_pdf_from_bag(bag_uuid, base_url):
+    """Generate PDF from bag opinion page"""
+    try:
+        # Construct the opinion page URL
+        opinion_url = f"{base_url}opinion-long-code/{bag_uuid}"
+        
+        # Fetch the HTML content
+        response = requests.get(opinion_url, timeout=30)
+        response.raise_for_status()
+        
+        html_content = response.text
+        
+        # Create PDF with optimized styling for printing
+        html_doc = HTML(string=html_content, base_url=opinion_url)
+        
+        # Custom CSS for better PDF formatting
+        css_content = """
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.4;
+            color: #333;
+            background: white;
+        }
+        
+        .container {
+            max-width: 100%;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            page-break-inside: avoid;
+        }
+        
+        /* Hide any interactive elements */
+        button, input, select, textarea, .btn {
+            display: none !important;
+        }
+        
+        /* Ensure proper spacing */
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+        
+        .mt-4 {
+            margin-top: 1rem;
+        }
+        
+        /* Optimize for printing */
+        .row {
+            page-break-inside: avoid;
+        }
+        
+        .col-md-6 {
+            width: 48%;
+            float: left;
+            margin-right: 2%;
+        }
+        
+        .col-md-6:nth-child(even) {
+            margin-right: 0;
+        }
+        
+        /* Clear floats */
+        .row::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        """
+        
+        css_doc = CSS(string=css_content)
+        
+        # Generate PDF filename
+        pdf_filename = f"{bag_uuid}_opinion.pdf"
+        pdf_path = os.path.join(PDF_FOLDER, pdf_filename)
+        
+        # Generate PDF
+        html_doc.write_pdf(pdf_path, stylesheets=[css_doc])
+        
+        return pdf_path, None
+        
+    except Exception as e:
+        return None, f"Error generating PDF: {str(e)}"
 
 @app.route('/')
 def index():
@@ -139,6 +233,18 @@ def submit_bag():
             except sqlite3.OperationalError as db_error:
                 return f"Database error: {str(db_error)}. Please check database permissions.", 500
             
+            # Generate PDF automatically after successful database save
+            try:
+                base_url = BASE_URL if BASE_URL else request.url_root
+                pdf_path, pdf_error = generate_pdf_from_bag(bag_uuid, base_url)
+                if pdf_error:
+                    print(f"PDF generation warning: {pdf_error}")
+                else:
+                    print(f"PDF generated successfully: {pdf_path}")
+            except Exception as pdf_exception:
+                print(f"PDF generation error: {str(pdf_exception)}")
+                # Don't fail the entire process if PDF generation fails
+            
             return redirect(url_for('view_opinion', uuid=bag_uuid))
         else:
             return "Invalid file format. Please upload valid image files.", 400
@@ -201,6 +307,10 @@ def uploaded_file(filename):
 @app.route('/static/images/qr/<filename>')
 def qr_file(filename):
     return send_from_directory(QR_FOLDER, filename)
+
+@app.route('/static/pdfs/<filename>')
+def pdf_file(filename):
+    return send_from_directory(PDF_FOLDER, filename)
 
 if __name__ == '__main__':
     init_db()

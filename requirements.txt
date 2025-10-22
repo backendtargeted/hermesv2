@@ -2,3 +2,5 @@ Flask==2.3.3
 qrcode[pil]==7.4.2
 Pillow==10.0.0
 Werkzeug==2.3.7
+WeasyPrint==60.2
+requests==2.31.0

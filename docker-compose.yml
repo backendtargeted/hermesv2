@@ -8,6 +8,7 @@ services:
     volumes:
       - ./static/images:/app/static/images
       - ./data:/app/data
+      - ./generated_pdfs:/app/generated_pdfs
     environment:
       - FLASK_ENV=production
       - FLASK_APP=app.py
