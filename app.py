@@ -88,8 +88,9 @@ def generate_pdf_from_bag(bag_uuid, base_url):
         return None, "WeasyPrint is not available. PDF generation is disabled."
     
     try:
-        # Construct the opinion page URL
-        opinion_url = f"{base_url}opinion-long-code/{bag_uuid}"
+        # Construct the opinion page URL - ensure proper slash handling
+        base_url = base_url.rstrip('/')  # Remove trailing slash
+        opinion_url = f"{base_url}/opinion-long-code/{bag_uuid}"
         
         # Fetch the HTML content
         response = requests.get(opinion_url, timeout=30)
@@ -178,8 +179,9 @@ def generate_pdf_from_bag(bag_uuid, base_url):
 def generate_printable_html(bag_uuid, base_url):
     """Generate a printable HTML file as fallback when WeasyPrint is not available"""
     try:
-        # Construct the opinion page URL
-        opinion_url = f"{base_url}opinion-long-code/{bag_uuid}"
+        # Construct the opinion page URL - ensure proper slash handling
+        base_url = base_url.rstrip('/')  # Remove trailing slash
+        opinion_url = f"{base_url}/opinion-long-code/{bag_uuid}"
         
         # Fetch the HTML content
         response = requests.get(opinion_url, timeout=30)
@@ -305,7 +307,8 @@ def submit_bag():
             # Generate QR code (transparent background, no white border)
             # Use BASE_URL if set (production), otherwise use request.url_root (development)
             base_url = BASE_URL if BASE_URL else request.url_root
-            qr_url = f"{base_url}opinion-long-code/{bag_uuid}"
+            base_url = base_url.rstrip('/')  # Remove trailing slash to ensure consistent formatting
+            qr_url = f"{base_url}/opinion-long-code/{bag_uuid}"
             qr = qrcode.QRCode(version=1, box_size=10, border=1)
             qr.add_data(qr_url)
             qr.make(fit=True)
