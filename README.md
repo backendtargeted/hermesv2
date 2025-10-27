@@ -114,3 +114,4 @@ This project is created for educational purposes as a coding challenge. The orig
 ## Contact
 
 Created as part of an AI coding challenge to recreate the bababebi opinion page.
+

@@ -4,3 +4,4 @@ Pillow==10.0.0
 Werkzeug==2.3.7
 WeasyPrint==60.2
 requests==2.31.0
+
